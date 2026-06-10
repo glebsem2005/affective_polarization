@@ -72,5 +72,3 @@ to produce the daily affective polarization series used in ITS analysis.
 
 - Domain-specific: Russian political Telegram (2022–2024)
 - Neutral handling uses a confidence threshold (≥ 0.6), not a trained class
-- Implicit sentiment (sarcasm) performs surprisingly well (F1=0.949)
-  vs. explicit (F1=0.881) — likely annotation artifact in explicit subset
