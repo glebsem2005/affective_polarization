@@ -1,7 +1,8 @@
 # Political Cluster Classifier — Russian Telegram Comments
 
-Few-shot SetFit classifier assigning Russian Telegram comments to one of three
-politically coherent user communities identified in the AP pipeline study.
+Silver-trained BERT classifier assigning Russian Telegram comments to one of
+three politically coherent user communities. Trained and evaluated on
+agent-labeled (silver) data. **This is the final inference model used in the pipeline.**
 
 ## Task
 
@@ -16,60 +17,45 @@ Given a sequence of comments from a single discussion thread (concatenated with
 
 ## Architecture
 
-- **Base model:** `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
-- **Method:** SetFit (Tunstall et al., 2022) — contrastive fine-tuning of the
-  sentence encoder + logistic regression head
+- **Base model:** `DeepPavlov/rubert-base-cased`
+- **Classification head:** custom MLP (hidden=256) with per-class thresholds
+- **Extra features:** NLI scores (gov/opp/ethnic/ukr/west), mean sentiment, toxicity
 - **Input:** up to 5 concatenated comments per author, joined with `[SEP]`,
-  truncated to 128 tokens
-- **Output:** one of three cluster labels
+  max 256 tokens
+- **Confidence threshold:** 0.6 (low-confidence predictions flagged separately)
 
 ## Performance
 
-5-fold cross-validation on silver-labelled held-out data:
+5-fold cross-validation on agent-labeled (silver) data:
 
-| Metric | Mean | Std |
-|--------|------|-----|
-| Macro F1 | **0.696** | 0.019 |
-| Accuracy | **0.701** | 0.018 |
+| Metric | Value |
+|--------|-------|
+| Macro F1 | **0.696 ± 0.019** |
+| Accuracy | **0.701 ± 0.018** |
 
-(Silver labels derived from the full unsupervised clustering pipeline;
-gold-label validation on 400 manually annotated examples showed consistent
-cluster separation.)
+Gold-label fine-tuning was evaluated separately (n=438 manual annotations,
+macro F1=0.42) and was insufficient — silver-trained model is used for inference.
+
+## Per-class thresholds
+
+| Class | Threshold |
+|-------|-----------|
+| pro-government | 0.35 |
+| opposition | 0.30 |
+| radical-nationalist | 0.45 |
 
 ## Usage
 
-```bash
-pip install setfit
-```
-
 ```python
-from setfit import SetFitModel
-
-model = SetFitModel.from_pretrained("path/to/models/stance/setfit")
-
-# Single author: pass list of their recent comments joined by [SEP]
-text = "Путин всё делает правильно [SEP] Запад хочет уничтожить Россию [SEP] Наша армия победит"
-pred = model.predict([text])
-print(pred)  # ['pro-government']
+import torch
+from pathlib import Path
+# See scripts/pipeline.py for full inference pipeline
+# model loads via UserClassifier from scripts/train_user_classifier.py
 ```
 
 ## Limitations
 
-- Trained on Russian-language Telegram comments (2022–2024, war context)
-- Three-class typology reflects discourse communities in this specific corpus;
-  not a universal political typology
-- Low-confidence predictions (~27% of corpus) are flagged and handled
-  separately in the pipeline (`pct_low_conf` column in CV results)
-- Systemic-opposition users (moderate pro-system critics) are excluded from
-  the three-class scheme and classified separately
-
-## Citation
-
-```bibtex
-@article{tunstall2022setfit,
-  title={Efficient Few-Shot Learning Without Prompts},
-  author={Tunstall, Lewis and Reimers, Nils and Jo, Unso Eun Seo and others},
-  journal={arXiv preprint arXiv:2209.11055},
-  year={2022}
-}
-```
+- Trained on agent-labeled data: label quality depends on LLM annotation
+- Low-confidence predictions (~27%) are excluded from AP analysis
+- Systemic-opposition not covered by the three-class scheme
+- Domain-specific: Russian political Telegram 2022–2024

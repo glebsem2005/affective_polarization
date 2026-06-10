@@ -1,16 +1,31 @@
 {
-  "model_name": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-  "label_map": {
-    "pro-government": 0,
-    "opposition": 1,
-    "radical-nationalist": 2
-  },
-  "idx2label": {
-    "0": "pro-government",
-    "1": "opposition",
-    "2": "radical-nationalist"
-  },
-  "n_train": 438,
-  "cv_macro_f1": 0.4277,
-  "cv_nc_f1": 0.41480000000000006
+  "architectures": [
+    "BertModel"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "classifier_dropout": null,
+  "directionality": "bidi",
+  "dtype": "float32",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "output_past": true,
+  "pad_token_id": 0,
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12,
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.57.3",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 119547
 }
