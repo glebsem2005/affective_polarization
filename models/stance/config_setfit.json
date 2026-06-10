@@ -1,0 +1,8 @@
+{
+  "normalize_embeddings": false,
+  "labels": [
+    "pro-government",
+    "opposition",
+    "radical-nationalist"
+  ]
+}
