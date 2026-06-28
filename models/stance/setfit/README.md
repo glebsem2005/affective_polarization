@@ -2,7 +2,7 @@
 
 Silver-trained BERT classifier assigning Russian Telegram comments to one of
 three politically coherent user communities. Trained and evaluated on
-agent-labeled (silver) data. **This is the final inference model used in the pipeline.**
+agent-labeled (silver) data
 
 ## Task
 
